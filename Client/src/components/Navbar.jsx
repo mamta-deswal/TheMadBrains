@@ -1,54 +1,81 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import WhatWe from './WhatWe';
+import MadBrainsDropdown from './MadBrainsDropdown';
+import { useClerk, useUser, UserButton } from '@clerk/clerk-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const BookIcon = () => (
+    <svg className="w-4 h-4 text-gray-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" >
+        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4" />
+    </svg>
+)
 
 const Navbar = () => {
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [hoverTimeout, setHoverTimeout] = useState(null);
 
-    const toggleDropdown = (dropdownName) => {
-        setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
+    // Scroll effect
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY;
+            setIsScrolled(scrollPosition > 50);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    // Clean up timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (hoverTimeout) {
+                clearTimeout(hoverTimeout);
+            }
+        };
+    }, [hoverTimeout]);
+
+    const handleMouseEnter = (dropdownName) => {
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+            setHoverTimeout(null);
+        }
+        setOpenDropdown(dropdownName);
+    };
+
+    const handleMouseLeave = () => {
+        const timeout = setTimeout(() => {
+            setOpenDropdown(null);
+        }, 100); // Small delay to prevent flickering
+        setHoverTimeout(timeout);
     };
 
     const closeDropdown = () => {
         setOpenDropdown(null);
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+            setHoverTimeout(null);
+        }
     };
 
+    const { openSignIn } = useClerk()
+    const { user } = useUser()
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     // Function to handle redirects
     const handleRedirect = (path) => {
-        // In a real React app with React Router, you would use:
-        // navigate(path) or history.push(path)
-        // For now, we'll use window.location or you can replace with your routing solution
-        console.log(`Redirecting to ${path}`);
-
-        // window.location.href = path; // Uncomment this for actual redirect
-    };
-
-    // Dropdown menu items for each category (removed blog and uiuxPlans)
-    const menuItems = {
-        whoWeAre: [
-            { title: "About Us", href: "#" },
-            { title: "Our Team", href: "#" },
-            { title: "Career", href: "#" },
-        ],
-        whatWeDo: [
-            { title: "UI/UX Design", href: "#" },
-            { title: "Web Development", href: "#" },
-            { title: "Mobile Apps", href: "#" },
-            { title: "Branding", href: "#" },
-            { title: "Digital Marketing", href: "#" },
-        ],
-        whyMadBrains: [
-            { title: "Our Process", href: "#" },
-            { title: "Quality Assurance", href: "#" },
-            { title: "Client Testimonials", href: "#" },
-            { title: "Case Studies", href: "#" },
-        ],
+        navigate(path);
+        closeDropdown();
     };
 
     return (
-        <div className="text-lg text-white w-full fixed top-0 z-50">
+        <div className={`text-lg w-full fixed top-0 z-50 ${isScrolled ? 'text-black' : 'text-white'}`}>
             {/* Top banner */}
-            <div className="text-center text-xl font-medium py-2 bg-gradient-to-r from-white via-white to-[#f6f2f1]">
+            <div className="text-center text-sm font-medium py-2 bg-gradient-to-r from-gray-300 via-white to-[#f6f2f1]">
                 <p className="text-black">
                     Flexible ui/ux design packages for startups and enterprises alike{' '}
                     <span className="underline underline-offset-2 text-orange-500">
@@ -57,25 +84,23 @@ const Navbar = () => {
                 </p>
             </div>
 
-            {/* Sticky Navbar */}
-            <nav className="h-[70px] flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 bg-black text-white transition-all shadow-sm">
+            {/* Sticky Navbar with scroll effect */}
+            <nav className={`h-[70px] flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 transition-all duration-300 shadow-sm ${isScrolled ? 'bg-white text-black' : 'bg-black text-white'
+                }`}>
                 {/* Logo */}
-                <span className='flex'>
-                    {/* <svg width="157" height="40" viewBox="0 0 157 40" fill="none" xmlns="./Logo-1-9ea992.svg">
-                        <path d="M47.904 28.28q-1.54 0-2.744-.644a5.1 5.1 0 0 1-1.904-1.82q-.672-1.148-.672-2.604v-3.864q0-1.456.7-2.604a4.9 4.9 0 0 1 1.904-1.792q1.204-.672 2.716-.672 1.82 0 3.276.952a6.44 6.44 0 0 1 2.324 2.52q.868 1.567.868 3.556 0 1.96-.868 3.556a6.5 6.5 0 0 1-2.324 2.492q-1.456.924-3.276.924m-7.196 5.32V14.56h3.08v3.612l-.532 3.276.532 3.248V33.6zm6.692-8.232q1.12 0 1.96-.504a3.6 3.6 0 0 0 1.344-1.456q.504-.924.504-2.128t-.504-2.128a3.43 3.43 0 0 0-1.344-1.428q-.84-.532-1.96-.532t-1.988.532a3.43 3.43 0 0 0-1.344 1.428q-.476.924-.476 2.128t.476 2.128a3.6 3.6 0 0 0 1.344 1.456q.868.504 1.988.504M56.95 28V14.56h3.08V28zm3.08-7.476-1.064-.532q0-2.548 1.12-4.116 1.148-1.596 3.444-1.596 1.008 0 1.82.364.812.365 1.512 1.176l-2.016 2.072a2.1 2.1 0 0 0-.812-.56 3 3 0 0 0-1.036-.168q-1.287 0-2.128.812-.84.811-.84 2.548m14.156 7.756q-2.016 0-3.64-.896a7 7 0 0 1-2.548-2.52q-.924-1.596-.924-3.584t.924-3.556a6.87 6.87 0 0 1 2.492-2.52q1.596-.924 3.528-.924 1.876 0 3.304.868a6.05 6.05 0 0 1 2.268 2.38q.84 1.512.84 3.444 0 .336-.056.7a7 7 0 0 1-.112.756H69.23v-2.52h9.436l-1.148 1.008q-.056-1.232-.476-2.072a3 3 0 0 0-1.204-1.288q-.756-.448-1.876-.448-1.176 0-2.044.504a3.43 3.43 0 0 0-1.344 1.428q-.476.896-.476 2.156t.504 2.212 1.428 1.484q.924.504 2.128.504 1.037 0 1.904-.364a4 4 0 0 0 1.512-1.064l1.96 1.988a6.3 6.3 0 0 1-2.38 1.736 7.6 7.6 0 0 1-2.968.588m15.91 0q-1.54 0-2.745-.644a5.1 5.1 0 0 1-1.904-1.82q-.672-1.148-.672-2.604v-3.864q0-1.456.7-2.604a4.9 4.9 0 0 1 1.904-1.792q1.204-.672 2.716-.672 1.821 0 3.276.952a6.44 6.44 0 0 1 2.324 2.52q.869 1.567.868 3.556 0 1.96-.868 3.556a6.5 6.5 0 0 1-2.324 2.492q-1.455.924-3.276.924M82.898 28V7.84h3.08v10.024l-.532 3.248.532 3.276V28zm6.692-2.632q1.12 0 1.96-.504a3.6 3.6 0 0 0 1.344-1.456q.504-.924.504-2.128t-.504-2.128a3.43 3.43 0 0 0-1.344-1.428q-.84-.532-1.96-.532t-1.988.532a3.43 3.43 0 0 0-1.344 1.428q-.476.924-.476 2.128.001 1.204.476 2.128a3.6 3.6 0 0 0 1.344 1.456q.87.504 1.988.504m15.067 2.912q-1.708 0-3.052-.756a5.5 5.5 0 0 1-2.072-2.072q-.728-1.344-.728-3.08V14.56h3.08v7.672q0 .98.308 1.68.336.672.952 1.036.644.364 1.512.364 1.344 0 2.044-.784.728-.812.728-2.296V14.56h3.08v7.812q0 1.764-.756 3.108a5.3 5.3 0 0 1-2.044 2.072q-1.317.728-3.052.728m8.976-.28V14.56h3.08V28zm1.54-15.904q-.783 0-1.316-.532-.504-.532-.504-1.316t.504-1.316a1.8 1.8 0 0 1 1.316-.532q.813 0 1.316.532t.504 1.316q0 .784-.504 1.316t-1.316.532M120.169 28V7.84h3.08V28zm8.552 0V8.96h3.08V28zm-3.22-10.64v-2.8h9.52v2.8zm17.274 10.92q-1.708 0-3.052-.756a5.5 5.5 0 0 1-2.072-2.072q-.728-1.344-.728-3.08V14.56h3.08v7.672q0 .98.308 1.68.336.672.952 1.036.643.364 1.512.364 1.344 0 2.044-.784.728-.812.728-2.296V14.56h3.08v7.812q0 1.764-.756 3.108a5.3 5.3 0 0 1-2.044 2.072q-1.317.728-3.052.728m8.977-.28V14.56h3.08V28zm1.54-15.904q-.785 0-1.316-.532-.504-.532-.504-1.316t.504-1.316a1.8 1.8 0 0 1 1.316-.532q.812 0 1.316.532t.504 1.316-.504 1.316-1.316.532" fill="#000" />
-                        <path d="m8.75 11.3 6.75 3.884 6.75-3.885M8.75 34.58v-7.755L2 22.939m27 0-6.75 3.885v7.754M2.405 15.408 15.5 22.954l13.095-7.546M15.5 38V22.939M29 28.915V16.962a2.98 2.98 0 0 0-1.5-2.585L17 8.4a3.01 3.01 0 0 0-3 0L3.5 14.377A3 3 0 0 0 2 16.962v11.953A2.98 2.98 0 0 0 3.5 31.5L14 37.477a3.01 3.01 0 0 0 3 0L27.5 31.5a3 3 0 0 0 1.5-2.585" stroke="#4F39F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg> */}
+                <span className='flex cursor-pointer' onClick={() => handleRedirect('/')}>
                     <img className='' src="./Logo-1-9ea992.svg" alt="MadBrains" />
-
                 </span>
 
                 {/* Desktop Nav with Dropdowns */}
                 <ul className="hidden md:flex items-center space-x-8 md:pl-28">
                     {/* Who We Are Dropdown */}
-                    <li className="relative">
+                    <li className="relative"
+                        onMouseEnter={() => handleMouseEnter('whoWeAre')}
+                        onMouseLeave={handleMouseLeave}
+                    >
                         <button
-                            onClick={() => toggleDropdown('whoWeAre')}
-                            className="flex items-center space-x-1 py-2 hover:text-gray-600 transition-colors"
+                            className="flex items-center space-x-1 py-2 hover:text-orange-500 transition-colors"
                         >
                             <span>Who We Are</span>
                             <svg
@@ -174,14 +199,8 @@ const Navbar = () => {
                                             <h4 className="text-lg font-semibold text-gray-800 mb-1">Need Different solutions ?</h4>
                                             <p className="text-sm text-gray-500">Upwork connects us with a global network of clients</p>
                                         </div>
-                                        {/* <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full font-medium transition-colors flex items-center space-x-2">
-                                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-                                            </svg>
-                                            <span>Talk to Sales</span>
-                                        </button> */}
                                         <button
-                                            onClick={() => window.location.href = '/contact'}
+                                            onClick={openSignIn}
                                             className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full font-medium transition-colors flex items-center space-x-2"
                                         >
                                             Book A Call
@@ -193,9 +212,11 @@ const Navbar = () => {
                     </li>
 
                     {/* What We Do Dropdown */}
-                    <li className="relative">
+                    <li className="relative"
+                        onMouseEnter={() => handleMouseEnter('whatWeDo')}
+                        onMouseLeave={handleMouseLeave}
+                    >
                         <button
-                            onClick={() => toggleDropdown('whatWeDo')}
                             className="flex items-center space-x-1 py-2 hover:text-orange-500 transition-colors"
                         >
                             <span>What We Do</span>
@@ -209,27 +230,17 @@ const Navbar = () => {
                             </svg>
                         </button>
                         {openDropdown === 'whatWeDo' && (
-                            // <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                            //     {menuItems.whatWeDo.map((item, index) => (
-                            //         <a
-                            //             key={index}
-                            //             href={item.href}
-                            //             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                            //             onClick={closeDropdown}
-                            //         >
-                            //             {item.title}
-                            //         </a>
-                            //     ))}
-                            // </div>
                             <WhatWe />
                         )}
                     </li>
 
                     {/* Why Mad Brains Dropdown */}
-                    <li className="relative">
+                    <li className="relative"
+                        onMouseEnter={() => handleMouseEnter('whyMadBrains')}
+                        onMouseLeave={handleMouseLeave}
+                    >
                         <button
-                            onClick={() => toggleDropdown('whyMadBrains')}
-                            className="flex items-center space-x-1 py-2 hover:text-gray-600 transition-colors"
+                            className="flex items-center space-x-1 py-2 hover:text-orange-500 transition-colors"
                         >
                             <span>Why Mad Brains</span>
                             <svg
@@ -242,26 +253,15 @@ const Navbar = () => {
                             </svg>
                         </button>
                         {openDropdown === 'whyMadBrains' && (
-                            <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                                {menuItems.whyMadBrains.map((item, index) => (
-                                    <a
-                                        key={index}
-                                        href={item.href}
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                                        onClick={closeDropdown}
-                                    >
-                                        {item.title}
-                                    </a>
-                                ))}
-                            </div>
+                            <MadBrainsDropdown />
                         )}
                     </li>
 
                     {/* Blog - Direct Link (No Dropdown) */}
                     <li>
                         <button
-                            onClick={() => handleRedirect('/blog')}
-                            className="py-2 hover:text-gray-600 transition-colors"
+                            onClick={() => navigate('/Blog')}
+                            className="py-2 hover:text-orange-500 transition-colors"
                         >
                             Blog
                         </button>
@@ -271,7 +271,8 @@ const Navbar = () => {
                     <li>
                         <button
                             onClick={() => handleRedirect('/uiux-plans')}
-                            className="py-2 hover:text-gray-600 transition-colors"
+                            className={`py-2 transition-colors ${isScrolled ? 'hover:text-orange-500' : 'hover:text-gray-300'
+                                }`}
                         >
                             Try UIUX Plans
                         </button>
@@ -279,36 +280,36 @@ const Navbar = () => {
                 </ul>
 
                 {/* Get Started Button */}
-                {/* <button
-                    onClick={() => window.location.href = '/contact'}
-                    className="md:inline hidden bg-orange-500 text-black hover:bg-gray-50 border border-gray-300 ml-20 px-9 py-2 rounded-full active:scale-95 transition-all"
-                >
-                    Book A Call
-                </button> */}
-                <button
-                    onClick={() => window.location.href = '/contact'}
-                    className="md:inline hidden bg-orange-500 text-black border border-gray-300 ml-20 px-9 py-2 rounded-full active:scale-95 transition-all duration-400 hover:transform hover:-translate-y-1 hover:scale-85 hover:shadow-xl hover:shadow-orange-500/30 hover:brightness-110"
-                >
-                    Book A Call
-                </button>
+                {user ?
+                    (<UserButton>
+                        <UserButton.MenuItems>
+                            <UserButton.Action label="My Bookings" labelIcon={<BookIcon />} onClick={() => navigate('/my-bookings')} />
+                        </UserButton.MenuItems>
+                    </UserButton>) : (<button
+                        onClick={openSignIn}
+                        className={`md:inline hidden bg-orange-500 border border-gray-300 ml-20 px-9 py-2 rounded-full active:scale-95 transition-all duration-400 hover:transform hover:-translate-y-1 hover:scale-85 hover:shadow-xl hover:shadow-orange-500/30 hover:brightness-110 ${isScrolled ? 'text-white' : 'text-black'
+                            }`}
+                    >
+                        Book A Call
+                    </button>)}
 
                 {/* Mobile Menu Button */}
                 <button aria-label="menu-btn" type="button" className="menu-btn inline-block md:hidden active:scale-90 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
-                        <path d="M3 7a1 1 0 1 0 0 2h24a1 1 0 1 0 0-2zm0 7a1 1 0 1 0 0 2h24a1 1 0 1 0 0-2zm0 7a1 1 0 1 0 0 2h24a1 1 0 1 0 0-2z" />
+                        <path stroke="currentColor" d="M3 7a1 1 0 1 0 0 2h24a1 1 0 1 0 0-2zm0 7a1 1 0 1 0 0 2h24a1 1 0 1 0 0-2zm0 7a1 1 0 1 0 0 2h24a1 1 0 1 0 0-2z" />
                     </svg>
                 </button>
 
                 {/* Mobile Nav */}
                 <div className="mobile-menu absolute top-[70px] left-0 w-full bg-white shadow-sm p-6 hidden md:hidden">
                     <ul className="flex flex-col space-y-4 text-lg">
-                        <li><a href="#" className="text-sm">Who We Are</a></li>
-                        <li><a href="#" className="text-sm">What We Do</a></li>
-                        <li><a href="#" className="text-sm">Why Mad Brains</a></li>
+                        <li><a href="#" className="text-sm text-gray-700">Who We Are</a></li>
+                        <li><a href="#" className="text-sm text-gray-700">What We Do</a></li>
+                        <li><a href="#" className="text-sm text-gray-700">Why Mad Brains</a></li>
                         <li>
                             <button
                                 onClick={() => handleRedirect('/blog')}
-                                className="text-sm text-left"
+                                className="text-sm text-left text-gray-700 hover:text-orange-500 transition-colors"
                             >
                                 Blog
                             </button>
@@ -316,13 +317,13 @@ const Navbar = () => {
                         <li>
                             <button
                                 onClick={() => handleRedirect('/uiux-plans')}
-                                className="text-sm text-left"
+                                className="text-sm text-left text-gray-700 hover:text-orange-500 transition-colors"
                             >
                                 Try UIUX Plans
                             </button>
                         </li>
                     </ul>
-                    <button type="button" className="bg-white text-gray-600 border border-gray-300 mt-6 text-sm hover:bg-gray-50 active:scale-95 transition-all w-40 h-11 rounded-full">
+                    <button onClick={openSignIn} type="button" className="bg-white text-gray-600 border border-gray-300 mt-6 text-sm hover:bg-gray-50 active:scale-95 transition-all w-40 h-11 rounded-full">
                         Book A Call
                     </button>
                 </div>

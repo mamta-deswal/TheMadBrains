@@ -42,7 +42,7 @@ const ParticleEffect = () => {
     
     generateParticles();
   }, []);
-  
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((particle) => (
@@ -79,7 +79,31 @@ const Hero = () => {
     // Add your navigation logic here
     alert('Starting your transformation journey!');
   };
-  
+
+  // WhatsApp and Call Functions
+  const handleWhatsAppClick = () => {
+    // Replace with your actual WhatsApp number (include country code without + sign)
+    const phoneNumber = "1234567890"; // Example: "919876543210" for India
+    const message = "Hello! I'm interested in your services."; // Optional pre-filled message
+
+    // WhatsApp URL format
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    // Open WhatsApp in new tab/window
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleCallClick = () => {
+    // Replace with your actual phone number
+    const phoneNumber = "+1234567890"; // Include country code with + sign
+
+    // Tel URL format
+    const telUrl = `tel:${phoneNumber}`;
+
+    // Open phone dialer
+    window.location.href = telUrl;
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden pt-15">
       {/* Animated Background */}
@@ -90,17 +114,18 @@ const Hero = () => {
       
       {/* Mouse Follower Effect */}
       <div 
-        className="absolute pointer-events-none z-10"
+        className="absolute pointer-events-none z-12"
         style={{
-          left: mousePosition.x - 100,
-          top: mousePosition.y - 100,
-          background: 'radial-gradient(circle, rgba(255,107,0,0.1) 0%, transparent 70%)',
-          width: '150px',
-          height: '150px',
+          left: mousePosition.x - 70,
+          top: mousePosition.y - 70,
+          background: 'radial-gradient(circle, rgba(255,146,268,0.4) 0%, transparent 50%)',
+          width: '250px',
+          height: '250px',
           borderRadius: '50%',
           transition: 'all 0.1s ease-out'
         }}
       />
+
       
       {/* Floating Icons */}
       <FloatingIcon 
@@ -144,12 +169,18 @@ const Hero = () => {
         delay={1.5}
       />
       
-      {/* Contact Icons */}
+      {/* Contact Icons - Updated with functionality */}
       <div className="fixed top-1/2 right-8 transform -translate-y-1/2 flex flex-col gap-4 z-20">
-        <button className="bg-blue-600 hover:bg-blue-700 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg">
+        <button
+          onClick={handleCallClick}
+          className="bg-blue-600 hover:bg-blue-700 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
+        >
           <div className="w-5 h-5 text-white flex items-center justify-center font-bold">📞</div>
         </button>
-        <button className="bg-green-600 hover:bg-green-700 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg">
+        <button
+          onClick={handleWhatsAppClick}
+          className="bg-green-600 hover:bg-green-700 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
+        >
           <div className="w-5 h-5 text-white flex items-center justify-center font-bold">💬</div>
         </button>
       </div>
@@ -158,12 +189,15 @@ const Hero = () => {
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
         {/* Brand Badge */}
         <div className="flex items-center gap-2 mb-8 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20">
-          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+          {/* <div className="w-3 h-3 bg-orange-500 rounded-full"></div> */}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-airplane-fill" viewBox="0 0 16 16">
+            <path d="M6.428 1.151C6.708.591 7.213 0 8 0s1.292.592 1.572 1.151C9.861 1.73 10 2.431 10 3v3.691l5.17 2.585a1.5 1.5 0 0 1 .83 1.342V12a.5.5 0 0 1-.582.493l-5.507-.918-.375 2.253 1.318 1.318A.5.5 0 0 1 10.5 16h-5a.5.5 0 0 1-.354-.854l1.319-1.318-.376-2.253-5.507.918A.5.5 0 0 1 0 12v-1.382a1.5 1.5 0 0 1 .83-1.342L6 6.691V3c0-.568.14-1.271.428-1.849" />
+          </svg>
           <span className="text-white font-medium ">The MadBrains</span>
         </div>
         
         {/* Main Heading */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 max-w-6xl leading-tight">
+        <h1 className="text-2xl md:text-4xl lg:text-7xl font-bold text-white mb-8 max-w-6xl">
           <span className="bg-gradient-to-r from-white via-gray-100 to-orange-300 bg-clip-text text-transparent">
             Designing & Developing Your
           </span>
@@ -174,10 +208,10 @@ const Hero = () => {
         </h1>
         
         {/* Description */}
-        <p className="text-gray-300 text-lg md:text-xl max-w-4xl mb-4 leading-relaxed">
+        <p className="text-gray-200 text-sm md:text-xl max-w-3xl mb-4 leading-relaxed">
           At The Mad Brains, we allow unlimited creativity in bringing your UI and UX design and 
           development dreams to reality. From scalability to crafting experiences you can't miss, our{' '}
-          <span className="text-orange-400 font-semibold">UI UX design company</span> stands with you in every stage.
+          <span className="text-white font-semibold">UI UX design company</span> stands with you in every stage.
         </p>
         
         {/* CTA Button */}
@@ -191,7 +225,7 @@ const Hero = () => {
             📞
           </div>
           Let's Begin Your Transformation
-          <div className="w-0 group-hover:w-2 h-2 bg-white rounded-full transition-all duration-300"></div>
+          {/* <div className="w-0 group-hover:w-2 h-2 bg-white rounded-full transition-all duration-300"></div>  */}
         </button>
         
         {/* Trust Indicators */}
