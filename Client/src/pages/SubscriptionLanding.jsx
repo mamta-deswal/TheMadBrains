@@ -4,6 +4,13 @@ import ChoosePlan from '../components/ChoosePlan';
 import SubscriptionProcess from '../components/SubscriptionProcess';
 import WhatWeInclude from '../components/WhatWeInclude';
 import Services2 from '../components/Services2';
+import OurWork from '../components/OurWork';
+import TackleProblem from '../components/TackleProblem';
+import Reviews from '../components/Reviews';
+import Payment from '../components/Payment';
+import CostEffectiveDesign from '../components/CostEffectiveDesign';
+import LatestBlogs from '../components/LatestBlogs';
+import FAQ from '../components/FAQ';
 
 const SubscriptionLanding = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -210,11 +217,18 @@ const SubscriptionLanding = () => {
           </div>
         </div>
       </div> */}
-      <Worked/>
-      <ChoosePlan/>
-      <SubscriptionProcess/>
-      <WhatWeInclude/>
-      <Services2/>
+          <Worked />
+          <ChoosePlan />
+          <SubscriptionProcess />
+          <WhatWeInclude />
+          <Services2 />
+          <OurWork />
+          <TackleProblem />
+          <Reviews />
+          <Payment />
+          <CostEffectiveDesign />
+          <LatestBlogs />
+          <FAQ />
     </div>
   );
 };

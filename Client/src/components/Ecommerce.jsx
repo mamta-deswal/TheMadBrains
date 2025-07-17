@@ -95,7 +95,7 @@ const Ecommerce = () => {
             {/* Main content container */}
             <div className="relative">
               {/* Product Card */}
-              <div className="absolute top-5 left-5 bg-gray-200 rounded-2xl shadow-xl p-4 z-10 transform -rotate-0 hover:bg-gray-500">
+              <div className="absolute top-5 left-5 bg-gray-200 rounded-2xl shadow-xl p-4 z-10 transform -rotate-0 hover:bg-gray-300">
                 <div className="w-20 h-20 bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
                   <span className="text-2xl">🪑</span>
                 </div>
