@@ -9,6 +9,8 @@ import Portfolio from '../components/Portfolio'
 import OutcomesSection from '../components/OutcomesSection'
 import HiringProcessComponent from '../components/HiringProcessComponent'
 import TestimonialsComponent from '../components/TestimonialsComponent'
+import TechTools from '../components/TechTools'
+import BlogSection from '../components/BlogSection'
 const Home = () => {
   return (
     <>
@@ -22,6 +24,8 @@ const Home = () => {
       <OutcomesSection/>
       <HiringProcessComponent/>
       <TestimonialsComponent/>
+      <TechTools />
+      <BlogSection />
     </>
   )
 }

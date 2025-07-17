@@ -157,7 +157,7 @@ const TestimonialsComponent = () => {
         <div className="flex justify-center gap-4">
           <button 
             onClick={prevTestimonial}
-            className="w-12 h-12 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center transition-all duration-200 group"
+                      className="w-12 h-12 bg-black bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center transition-all duration-200 group outline-1"
           >
             <svg 
               className="w-6 h-6 text-white group-hover:text-orange-400 transition-colors" 
@@ -176,7 +176,7 @@ const TestimonialsComponent = () => {
           
           <button 
             onClick={nextTestimonial}
-            className="w-12 h-12 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center transition-all duration-200 group"
+                      className="w-12 h-12 bg-black bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center transition-all duration-200 group outline-1"
           >
             <svg 
               className="w-6 h-6 text-white group-hover:text-orange-400 transition-colors" 
